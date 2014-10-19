@@ -2,14 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*
-Doubly linked list 
-
-
-
-
-*/
-
 struct node_s {
   int value;
   struct node_s* prev;
@@ -55,23 +47,31 @@ void insert_first(list_t* list, int value) {
   list->size++;
 }
 
+void remove_last_remaining(list_t* list) {
+  if (list->first == NULL) {
+    return;
+  }
+  free(list->first);
+  list->first = NULL;
+  list->last = NULL;
+  list->size = 0;
+}
+
+
+
 void remove_first(list_t* list) {
   if (list->first == NULL) {
     return;
   }
   if (list->first == list->last) {
-    free(list->first);
-    list->first = NULL;
-    list->last = NULL;
-    list->size = 0;
-  } else {
+    remove_last_remaining(list);
+    } else {
     node_t* new_first = list->first->next;
     free(list->first);
     list->first = new_first;
     list->first->prev = NULL;
     list->size--;
   }
-
 }
 
 /*
@@ -102,11 +102,8 @@ void remove_last(list_t* list) {
   }
 
   if (list->first == list->last) {
-    free(list->first);
-    list->first = NULL;
-    list->last = NULL;
-    list->size = 0;
-  } else {
+    remove_last_remaining(list);
+    } else {
     node_t* new_last = list->last->prev;
     free(list->last);
     list->last = new_last;
@@ -115,9 +112,33 @@ void remove_last(list_t* list) {
   }
 }
 
-/*node_t* get(list_t* list, unsigned int index) {
-  
+/*
+* get the node at the given index
+*/
+node_t* get(list_t* list, unsigned int index) {
+  if (list->first == NULL || index+1 > list->size) {
+    return NULL;
+  }
+  unsigned int count;
+  node_t* node;
+  if ((list->size) / 2 > index) {
+    //go forwards
+    node = list->first;
+    for (count = 0; count < index && node != NULL; count++) {
+      node = node->next;
+    }
+  } else {
+    //go backwards
+    node = list->last;
+    for (count = list->size-1; count > index && node != NULL; count--) {
+      node = node->prev;
+    }
+  }
+  return node;
 }
+
+/*
+* Return the sum of all node's values
 */
 int sum(list_t* list) {
   int sum = 0;
@@ -140,17 +161,19 @@ void print_list_backwards(list_t* list) {
 }
 
 
-
-
 int main() {
   list_t list;
   init(&list);
   insert_first(&list, 5);
-  print_list_forwards(&list);
+  remove_first(&list);
+  remove_last(&list);
   add(&list, 10);
-  int sum_of_list = sum(&list);
-  printf("sum: %i\n", sum_of_list);
-  print_list_backwards(&list);
+  add(&list, 2);
+  add(&list, 4);
+  print_list_forwards(&list);
+  node_t* node_0 = get(&list, 0);
+  node_t* node_1 = get(&list, 1);
+  printf("index 0 %i\nindex 1 %i\n", node_0->value, node_1->value);
   return 0;
 }
 
