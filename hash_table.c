@@ -16,6 +16,7 @@ struct hashmap_s {
 void init(struct hashmap_s* map) {
   map->size = 3;
   map->slots = malloc(sizeof(struct slot_s) * map->size);
+  printf("init %p \n", map->slots);
   memset(map->slots, 0, sizeof(struct slot_s) * map->size);
 }
 
@@ -55,7 +56,8 @@ void resize(struct hashmap_s* old_map) {
   struct hashmap_s new_map;
   init_resized_map(&new_map, old_map->size*2);
   copy(old_map, &new_map);
-  free(old_map->slots);
+  printf("resize %p \n", old_map->slots);
+  //free(old_map->slots);
   old_map = &new_map;
 }
 
@@ -79,6 +81,7 @@ void set(struct hashmap_s* map, int key, int value) {
   slot->key = key;
   slot->value = value;
   if (num_entries / (float)map->size > 0.5) {
+    printf("set %p \n", map->slots);
     resize(map);
   }
 }
@@ -86,6 +89,7 @@ void set(struct hashmap_s* map, int key, int value) {
 int main() {
   struct hashmap_s map;
   init(&map);
+  printf("main %p \n", map.slots);
   int val = get(&map, 5);
   printf("value %i\n ", val);
   set(&map, 11, 11);

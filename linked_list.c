@@ -72,13 +72,17 @@ node_t* get_last(list_t* list) {
 void add(list_t* list, int value) {
   node_t* node = create_node();
   node->data = value;
-  node_t* old_last = get_last(list);
-  old_last->next = node;
+  if (list->first != NULL) {
+    node_t* old_last = get_last(list);
+    old_last->next = node;
+  } else {
+    list->first = node;
+  }
   list->size--;
 }
 
 /*
-*
+* Remove the last node
 */
 void remove_last(list_t* list) {
   if (list->first == NULL) {
@@ -99,7 +103,7 @@ void remove_last(list_t* list) {
 }
 
 /*
-* 
+* Get a node at a given index
 */
 node_t* get(list_t* list, unsigned int index) {
   if ((list->first == NULL) || (index+1 > list->size)) {
@@ -115,7 +119,7 @@ node_t* get(list_t* list, unsigned int index) {
 }
 
 /*
-* Return the number of items in list
+* Return the sum of all data elements in the list
 */
 int sum(list_t* list) {
   int sum = 0;
@@ -132,10 +136,12 @@ void print_list(list_t* list) {
 }
 
 
-
-
 int main() {
   list_t list;
   init(&list);
+  remove_first(&list);
+  insert_first(&list, 10);
+  add(&list, 5);
+  print_list(&list);
   return 0;
 }
