@@ -38,11 +38,9 @@ node_t* create_node() {
   return node;
 }
 
-
 void insert_first(list_t* list, int value) {
   node_t* node = create_node();
   node->value = value;
-  
   if (list->first == NULL) {
     list->first = node;
     list->last = node;
@@ -54,6 +52,79 @@ void insert_first(list_t* list, int value) {
     list->first = node;
     node->prev = NULL;
   }
+  list->size++;
+}
+
+void remove_first(list_t* list) {
+  if (list->first == NULL) {
+    return;
+  }
+  if (list->first == list->last) {
+    free(list->first);
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
+  } else {
+    node_t* new_first = list->first->next;
+    free(list->first);
+    list->first = new_first;
+    list->first->prev = NULL;
+    list->size--;
+  }
+
+}
+
+/*
+* Add a new node at the end of the list
+*/
+void add(list_t* list, int value) {
+  node_t* node = create_node();
+  node->value = value;
+
+  if (list->first == NULL) {
+    list->first = node;
+    list->last = node;
+    node->prev = NULL;
+    node->next = NULL;
+  } else {
+    node->prev = list->last;
+    list->last->next = node;
+    list->last = node;
+    node->next = NULL;
+  }
+
+  list->size++;
+}
+
+void remove_last(list_t* list) {
+  if (list->first == NULL) {
+    return;
+  }
+
+  if (list->first == list->last) {
+    free(list->first);
+    list->first = NULL;
+    list->last = NULL;
+    list->size = 0;
+  } else {
+    node_t* new_last = list->last->prev;
+    free(list->last);
+    list->last = new_last;
+    list->last->next = NULL;
+    list->size--;
+  }
+}
+
+/*node_t* get(list_t* list, unsigned int index) {
+  
+}
+*/
+int sum(list_t* list) {
+  int sum = 0;
+  for (node_t* node = list->first; node != NULL; node = node->next) {
+    sum += node->value;
+  }
+  return sum;
 }
 
 void print_list_forwards(list_t* list) {
@@ -76,6 +147,9 @@ int main() {
   init(&list);
   insert_first(&list, 5);
   print_list_forwards(&list);
+  add(&list, 10);
+  int sum_of_list = sum(&list);
+  printf("sum: %i\n", sum_of_list);
   print_list_backwards(&list);
   return 0;
 }
