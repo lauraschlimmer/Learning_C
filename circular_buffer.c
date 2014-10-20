@@ -47,10 +47,8 @@ int isFull(cbuffer_t* buffer) {
 * FIXME check how to handle full buffer
 */
 void write(cbuffer_t* buffer, int value) {
-  printf("end: %i\n", buffer->end);
   buffer->slots[buffer->end].value = value;
   buffer->end = (buffer->end + 1) % buffer->size;
-  printf("end: %i\n", buffer->end);
 }
 
 
@@ -59,7 +57,6 @@ slot_t* read(cbuffer_t* buffer) {
     return NULL;
   }
   int start = buffer->start;
-  printf("start: %i\n", start);
   slot_t* slot = &(buffer->slots[buffer->start]);
   buffer->start = (buffer->start + 1) % buffer->size;
   return &(buffer->slots[start]);
