@@ -62,6 +62,9 @@ slot_t* read(cbuffer_t* buffer) {
   return &(buffer->slots[start]);
 }
 
+void freeBuffer(cbuffer_t* buffer) {
+  free(buffer->slots);
+}
 
 
 int main() {
