@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#define HEIGHT 20
-#define WIDTH 20
+#define HEIGHT 30
+#define WIDTH 30
 
 void init(int grid[][HEIGHT]) {
   for (int i = 0; i < WIDTH; i++) {
@@ -76,7 +76,7 @@ void printGrid(int grid[][HEIGHT]) {
     printf("|");
     for (y = 0; y < HEIGHT; y++) {
       if (grid[x][y] > 0) {
-        printf(" o ");
+        printf(" X ");
       } else {
         printf("   ");
       }
@@ -94,7 +94,6 @@ void printGrid(int grid[][HEIGHT]) {
 
 
 int main() {
-  int cycles = 5;
   int grid[WIDTH][HEIGHT];
   int next[WIDTH][HEIGHT];
 
@@ -104,14 +103,18 @@ int main() {
       next[i][j] = 0;
     }
   }
-
   init(grid);
   printGrid(grid);
-
-  for (int i = 0; i < cycles; i++) {
-    updateGrid(grid, next);
-    printGrid(next);
-    memcpy(grid, next, sizeof(int)*WIDTH*HEIGHT);
+  printf("Please press Enter to get the next generation");
+  while(1) {
+    char c = getchar();
+    if (c == '\n') {
+      updateGrid(grid, next);
+      printGrid(next);
+      memcpy(grid, next, sizeof(int)*WIDTH*HEIGHT);
+    }
   }
+
+  
 
 }
