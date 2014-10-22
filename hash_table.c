@@ -8,26 +8,29 @@ struct slot_s {
   int used;
 };
 
+typedef struct slot_s slot_t;
+
 struct hashmap_s {
   size_t size;
-  struct slot_s* slots;
+  slot_t* slots;
 };
 
-void init(struct hashmap_s* map) {
-  map->size = 3;
-  map->slots = malloc(sizeof(struct slot_s) * map->size);
-  printf("init %p \n", map->slots);
-  memset(map->slots, 0, sizeof(struct slot_s) * map->size);
-}
+typedef struct hashmap_s hashmap_t;
 
-void init_resized_map(struct hashmap_s* map, size_t size) {
+void init(hashmap_t* map, unsigned int size) {
   map->size = size;
-  map->slots = malloc(sizeof(struct slot_s) * size);
-  memset(map->slots, 0, sizeof(struct slot_s) * size);
+  map->slots = malloc(sizeof(slot_t) * map->size);
+  memset(map->slots, 0, sizeof(slot_t) * map->size);
+}
+
+void init_resized_map(hashmap_t* map, size_t size) {
+  map->size = size;
+  map->slots = malloc(sizeof(slot_t) * size);
+  memset(map->slots, 0, sizeof(slot_t) * size);
 }
 
 
-struct slot_s* get_slot(struct hashmap_s* map, int slot_key ) {
+struct slot_s* get_slot(hashmap_t* map, int slot_key ) {
   int key = slot_key;
   int pos = key % map->size;
   for (int counter = 0; counter < map->size; counter++) {
@@ -40,11 +43,11 @@ struct slot_s* get_slot(struct hashmap_s* map, int slot_key ) {
 }
 
 
-void copy(struct hashmap_s* old_map, struct hashmap_s* new_map) {
+void copy(hashmap_t* old_map, hashmap_t* new_map) {
   int n;
   for (n = 0; n < old_map->size; n++) {
     if (old_map->slots[n].used == 1) {
-      struct slot_s* slot = get_slot(new_map, old_map->slots[n].key);
+      slot_t* slot = get_slot(new_map, old_map->slots[n].key);
       slot->used = 1;
       slot->key = old_map->slots[n].key;
       slot->value = old_map->slots[n].value;
@@ -52,18 +55,19 @@ void copy(struct hashmap_s* old_map, struct hashmap_s* new_map) {
   }
 }
 
-void resize(struct hashmap_s* old_map) {
-  struct hashmap_s new_map;
+void resize(hashmap_t* old_map) {
+  printf("resize\n");
+  hashmap_t new_map;
   init_resized_map(&new_map, old_map->size*2);
   copy(old_map, &new_map);
-  printf("resize %p \n", old_map->slots);
-  //free(old_map->slots);
-  old_map = &new_map;
+  free(old_map->slots);
+  old_map->size = old_map->size * 2;
+  old_map->slots = new_map.slots;
 }
 
 
-int get(struct hashmap_s* map, int key) {
-  struct slot_s* slot = get_slot(map, key);
+int get(hashmap_t* map, int key) {
+  slot_t* slot = get_slot(map, key);
   if (slot->used == 0) {
     return 0;
   }
@@ -72,29 +76,29 @@ int get(struct hashmap_s* map, int key) {
 
 float num_entries = 0.0;
 
-void set(struct hashmap_s* map, int key, int value) {
-  struct slot_s* slot = get_slot(map, key);
+void set(hashmap_t* map, int key, int value) {
+  printf("set\n");
+  slot_t* slot = get_slot(map, key);
   if (slot->used == 0) {
     slot->used = 1;
     num_entries++;
   }
   slot->key = key;
   slot->value = value;
-  if (num_entries / (float)map->size > 0.5) {
-    printf("set %p \n", map->slots);
+  if (num_entries / (float)map->size > 0.7) {
     resize(map);
   }
 }
 
 int main() {
-  struct hashmap_s map;
-  init(&map);
-  printf("main %p \n", map.slots);
+  hashmap_t map;
+  init(&map, 5);
   int val = get(&map, 5);
-  printf("value %i\n ", val);
   set(&map, 11, 11);
   set(&map, 22, 22);
   set(&map, 10, 12);
+  set(&map, 2, 3);
+  set(&map, 4, 9);
   return 0;
 };
 
