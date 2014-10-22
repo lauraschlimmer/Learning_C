@@ -56,7 +56,6 @@ void copy(hashmap_t* old_map, hashmap_t* new_map) {
 }
 
 void resize(hashmap_t* old_map) {
-  printf("resize\n");
   hashmap_t new_map;
   init_resized_map(&new_map, old_map->size*2);
   copy(old_map, &new_map);
@@ -77,7 +76,6 @@ int get(hashmap_t* map, int key) {
 float num_entries = 0.0;
 
 void set(hashmap_t* map, int key, int value) {
-  printf("set\n");
   slot_t* slot = get_slot(map, key);
   if (slot->used == 0) {
     slot->used = 1;
